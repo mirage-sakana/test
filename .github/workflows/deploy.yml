@@ -1,0 +1,37 @@
+name: Deploy to Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate image list
+        run: |
+          cd img
+          ls -1 | grep -Ei '\.(jpe?g|png|gif|webp)$' > ../images.txt || true
+          jq -R -s -c 'split("\n") | map(select(length > 0))' ../images.txt > ../images.json
+          cat ../images.json
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment
