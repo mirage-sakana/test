@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Gallery</title>
+<style>
+  .gallery { display: flex; flex-wrap: wrap; gap: 10px; }
+  .gallery img { width: 200px; height: 200px; object-fit: cover; border-radius: 8px; }
+</style>
+</head>
+<body>
+<h1>画像ギャラリー</h1>
+<div class="gallery" id="gallery"></div>
+
+<script>
+fetch('./images.json')
+  .then(res => res.json())
+  .then(files => {
+    const gallery = document.getElementById('gallery');
+    files.forEach(name => {
+      const img = document.createElement('img');
+      img.src = `img/${name}`;
+      img.alt = name;
+      gallery.appendChild(img);
+    });
+  })
+  .catch(err => console.error('画像一覧の取得に失敗:', err));
+</script>
+</body>
+</html>
